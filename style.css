@@ -1,0 +1,181 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Page base */
+body {
+  text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, hwb(182 62% 0%), #ffb7b7);
+  transition: background 0.8s ease, color 0.5s ease;
+  overflow-x: hidden;
+}
+
+/* Header: center title, keep toggle at top-right */
+header {
+  position: relative;           /* allow absolutely positioned child */
+  display: block;
+  padding: 18px 20px;
+  align-items: center;
+  background: transparent;
+}
+
+/* Title centered in header */
+h1 {
+  font-size: 1.8rem;
+  color: #222;
+  text-align: center;
+  width: 100%;
+  line-height: 1;
+  margin: 0 auto;
+}
+
+/* Toggle placed absolute so title stays centered visually */
+#toggleMode {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 6px;
+  border-radius: 8px;
+}
+#toggleMode:hover {
+  transform: translateY(-50%) scale(1.15);
+}
+
+/* Main content */
+main {
+  padding: 40px 20px;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+select,
+button {
+  padding: 10px 15px;
+  margin: 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+select {
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #0078ff;
+  color: #fff;
+}
+button:hover {
+  transform: scale(1.05);
+}
+
+.hidden {
+  display: none;
+}
+
+#result {
+  margin-top: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+#songTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+#moodQuote {
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.actions button {
+  background: #222;
+  color: #fff;
+  margin: 5px;
+}
+.actions button:hover {
+  opacity: 0.8;
+}
+
+/* Emoji container */
+#emojiContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.emoji {
+  position: absolute;
+  top: 0;
+  font-size: 1.5rem;
+  animation: floatDown linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes floatDown {
+  from {
+    transform: translateY(-5vh);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+/* Footer pinned to bottom */
+footer {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+  padding: 15px;
+  font-size: 0.9rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* Dark mode styles */
+body.dark {
+  background: linear-gradient(135deg, #121212, #1e1e1e);
+  color: #646efe;
+}
+
+body.dark button {
+  background: #444;
+  color: #fff;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  h1 { font-size: 1.4rem; padding-right: 56px; } /* leave space for toggle */
+  #toggleMode { right: 12px; }
+  #result { width: 90%; padding: 18px; }
+}

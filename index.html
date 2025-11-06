@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoulSync🎧"</title>
+  <link rel="stylesheet" href="style.css" />
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-14920914');
+</script>
+  
+
+
+</head>
+<body>
+  <header>
+    <h1>SoulSync🎧</h1>
+    <button id="toggleMode" title="Toggle Dark/Light Mode">🌙</button>
+  </header>
+
+  <main>
+    <section class="mood-section">
+      <h2>How are you feeling today?</h2>
+      <select id="moodSelect">
+        <option value="">Select a mood</option>
+        <option value="happy">😊 Happy</option>
+        <option value="sad">😢 Sad</option>
+        <option value="chill">😌 Chill</option>
+        <option value="energetic">⚡ Energetic</option>
+        <option value="romantic">❤️ Romantic</option>
+      </select>
+      <button id="getSong">Get Song</button>
+    </section>
+
+    <section id="result" class="hidden">
+      <h3 id="songTitle"></h3>
+      <p id="moodQuote"></p>
+      <div id="playerContainer"></div>
+      <div class="actions">
+        <button id="copyBtn">📋 Copy Song Link</button>
+        <button id="shareMood">💌 Share Mood</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="emojiContainer"></div>
+
+  <footer>
+    <p>© 2025 Ashu & Farhan | All Rights Reserved</p>
+  </footer>
+  <audio id="moodAudio" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
