@@ -11,9 +11,9 @@ const toggleMode = document.getElementById("toggleMode");
 
 const moodData = {
   happy: {
-    title: "Happy – Pharrell Williams",
-    link: "https://www.youtube.com/watch?v=ZbZSe6N_BXs",
-    embed: "https://www.youtube.com/embed/ZbZSe6N_BXs?autoplay=1",
+    title: "Senorita, Zindagi Na Milegi Dobara",
+    link: "https://youtu.be/yDv0WSgXJVg?si=OR9i5dQwzDtiYNlz",
+    embed: "https://www.youtube.com/embed/yDv0WSgXJVg?autoplay=1",
     color: "#FFD93D",
     emoji: "😊",
     quote: "Happiness is not by chance, but by choice. 🌼"
