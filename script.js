@@ -19,9 +19,9 @@ const moodData = {
     quote: "Happiness is not by chance, but by choice. 🌼"
   },
   sad: {
-    title: " WILDFLOWER  – Billie Eilish",
-    link: "https://youtu.be/wKBYEhTgoHU?si=BnqtCK06WB2WJSmZ",
-    embed: "https://www.youtube.com/embed/wKBYEhTgoHU?si=d2S5S8ZP8TaNbshO",
+    title: "To fir Aao, Awarapan.",
+    link: "https://youtu.be/h5-Kq9k3zeo?si=ltUCvRkDzs6szz73",
+    embed: "https://www.youtube.com/embed/h5-Kq9k3zeo?rel=0",
     color: "#89CFF0",
     emoji: "😢",
     quote: "Even the darkest nights end with sunrise. 🌅"
