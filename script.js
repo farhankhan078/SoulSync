@@ -1,3 +1,4 @@
+// 1. Element Selectors
 const moodSelect = document.getElementById("moodSelect");
 const getSongBtn = document.getElementById("getSong");
 const resultDiv = document.getElementById("result");
@@ -8,77 +9,120 @@ const shareBtn = document.getElementById("shareMood");
 const emojiContainer = document.getElementById("emojiContainer");
 const playerContainer = document.getElementById("playerContainer");
 const toggleMode = document.getElementById("toggleMode");
+const video = document.getElementById('video');
+const aiStatus = document.getElementById('ai-status');
 
+// 2. Song Database
 const moodData = {
   happy: {
-    title: "Senorita, Zindagi Na Milegi Dobara",
-    link: "https://youtu.be/yDv0WSgXJVg?si=OR9i5dQwzDtiYNlz",
-    embed: "https://www.youtube.com/embed/yDv0WSgXJVg?autoplay=1",
+    title: "Tu Hi Mera",
+    link: "https://youtu.be/_u9MRjafdMo",
+    embed: "https://www.youtube.com/embed/_u9MRjafdMo?rel=0",
     color: "#FFD93D",
     emoji: "😊",
     quote: "Happiness is not by chance, but by choice. 🌼"
   },
   sad: {
-    title: "To fir Aao, Awarapan.",
-    link: "https://youtu.be/h5-Kq9k3zeo?si=ltUCvRkDzs6szz73",
+    title: "To fir Aao - Awarapan",
+    link: "https://youtu.be/h5-Kq9k3zeo",
     embed: "https://www.youtube.com/embed/h5-Kq9k3zeo?rel=0",
     color: "#89CFF0",
     emoji: "😢",
     quote: "Even the darkest nights end with sunrise. 🌅"
   },
   chill: {
-    title: "Sunflower – Post Malone & Swae Lee",
-    link: "https://www.youtube.com/watch?v=ApXoWvfEYVU",
-    embed: "https://www.youtube.com/embed/ApXoWvfEYVU?autoplay=1",
+    title: "Makhna - Drive",
+    link: "https://youtu.be/HqUeSjsYLNU?si=6efD5W_Ggd7u3VYE",
+    embed: "https://www.youtube.com/embed/HqUeSjsYLNU?si=6efD5W_Ggd7u3VYE",
     color: "#C1F0C1",
     emoji: "😌",
     quote: "Peace is found in moments of stillness. 🍃"
   },
   energetic: {
-    title: "Believer – Imagine Dragons",
-    link: "https://www.youtube.com/watch?v=7wtfhZwyrcc",
-    embed: "https://www.youtube.com/embed/7wtfhZwyrcc?autoplay=1",
+    title: "Ufff || Bang Bang",
+    link: "https://youtu.be/yvcSsQ6rxgA",
+    embed: "https://www.youtube.com/embed/yvcSsQ6rxgA?rel=0",
     color: "#FF6F61",
     emoji: "⚡",
     quote: "Energy flows where attention goes. 🔥"
   },
   romantic: {
-    title: "Pride and Prejudic – Lana Del Rey",
-    link: "https://www.youtube.com/watch?v=dSAPGEnCc3Y",
-    embed: "https://www.youtube.com/embed/dSAPGEnCc3Y?autoplay=1",
+    title: "Tum Ho To - Saiyaara",
+    link: "https://youtu.be/8SYPKQMW_2Q",
+    embed: "https://www.youtube.com/embed/8SYPKQMW_2Q?rel=0",
     color: "#FFB6C1",
     emoji: "❤️",
-    quote: "Love isn’t about finding perfection — it’s about feeling at home in someone’s soul. 💞"
+    quote: "If I know what love is, it is because of you. 💞"
   }
 };
 
-// 🎵 Main Mood Handler
-getSongBtn.addEventListener("click", () => {
-  const mood = moodSelect.value;
-  if (!mood) {
-    showToast("Please select a mood!", "#444");
-    return;
+// 3. AI Model Loading
+async function loadAI() {
+  startVideo();
+  try {
+    const MODEL_URL = './models'; 
+    aiStatus.textContent = "Loading AI Models...";
+    
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    
+    aiStatus.textContent = "AI Ready! Scanning Face...";
+   // startVideo();
+  } catch (err) {
+    console.error("AI Load Error:", err);
+    aiStatus.textContent = "AI Model Error. Ensure 'models' folder is present.";
   }
-  displayMood(mood);
+}
+
+// 4. Camera Handling
+function startVideo() {
+  navigator.mediaDevices.getUserMedia({ video: {} })
+    .then(stream => { video.srcObject = stream; })
+    .catch(err => { 
+        aiStatus.textContent = "Camera Access Denied."; 
+    });
+}
+
+// 5. AI Detection Loop (Runs every 4 seconds)
+video.addEventListener('play', () => {
+  setInterval(async () => {
+    if (typeof faceapi !== 'undefined' && faceapi.nets.tinyFaceDetector.params) {
+      const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+      
+      if (detections.length > 0) {
+        const expressions = detections[0].expressions;
+        const mood = Object.keys(expressions).reduce((a, b) => expressions[a] > expressions[b] ? a : b);
+        
+        let mappedMood = "";
+        if (mood === "happy") mappedMood = "happy";
+        else if (mood === "sad") mappedMood = "sad";
+        else if (mood === "neutral") mappedMood = "chill";
+        else if (mood === "surprised" || mood === "angry") mappedMood = "energetic";
+
+        // Auto-update UI only if user hasn't made a manual choice
+        if (mappedMood && !moodSelect.value) {
+          moodSelect.value = mappedMood;
+          displayMood(mappedMood);
+          aiStatus.textContent = `Auto-Detected: ${mappedMood.toUpperCase()}`;
+        }
+      }
+    }
+  }, 4000);
 });
 
-// 🎨 Function: display mood
+// 6. UI Logic: Display Mood & Play Media
 function displayMood(mood) {
   const moodInfo = moodData[mood];
+  if (!moodInfo) return;
+
   songTitle.textContent = moodInfo.title;
   moodQuote.textContent = moodInfo.quote;
   resultDiv.classList.remove("hidden");
 
-  // Custom background logic
-  if (mood === "sad") {
-    document.body.style.background = "linear-gradient(135deg, #c7a7a7ff, #482a2aff)";
-  } else if (mood === "romantic") {
-    document.body.style.background = "linear-gradient(135deg, #ffdde1, #ee9ca7)";
-  } else {
-    document.body.style.background = `linear-gradient(135deg, ${moodInfo.color}, white)`;
-  }
+  // Dynamic Backgrounds
+  document.body.style.background = `linear-gradient(135deg, ${moodInfo.color}, #ffffff)`;
 
-  // 💫 Floating emojis
+  // Floating Emoji Animations
   emojiContainer.innerHTML = "";
   for (let i = 0; i < 15; i++) {
     const emoji = document.createElement("div");
@@ -90,147 +134,66 @@ function displayMood(mood) {
     emojiContainer.appendChild(emoji);
   }
 
-  // 🎥 Video (muted)
+  // YouTube Embed integration
   playerContainer.innerHTML = `
-    <div class="video-wrapper" style="position: relative; display: inline-block;">
-      <iframe width="280" height="158"
-        src="${moodInfo.embed}&mute=1"
-        title="${moodInfo.title}"
-        frameborder="0"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        allowfullscreen
-        loading="lazy">
+    <div class="video-wrapper">
+      <iframe width="280" height="158" 
+        src="${moodInfo.embed}&autoplay=1" 
+        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
       </iframe>
-      <button id="playSoundBtn" 
-        style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem;">
-        ▶ Play Sound
-      </button>
     </div>
   `;
 
-  // ▶ Play Sound
-  const playSoundBtn = document.getElementById("playSoundBtn");
-  playSoundBtn.addEventListener("click", () => {
-    playerContainer.innerHTML = `
-      <iframe width="280" height="158"
-        src="${moodInfo.embed}&autoplay=1"
-        title="${moodInfo.title}"
-        frameborder="0"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        allowfullscreen>
-      </iframe>
-    `;
-  });
-
-  // 📋 Copy Link
+  // Action Handlers
   copyBtn.onclick = () => {
     navigator.clipboard.writeText(moodInfo.link);
     showToast("🎶 Song link copied!", moodInfo.color);
   };
 
-  // 💌 Share Mood
-  shareBtn.onclick = async () => {
-    const shareText = `I'm feeling ${mood}! 💫 Listening to "${moodInfo.title}" on EchoMood 🎧`;
-    const shareUrl = `${window.location.origin}${window.location.pathname}?mood=${mood}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "EchoMood 🎧",
-          text: shareText,
-          url: shareUrl
-        });
-      } catch (err) {
-        console.log("Share cancelled:", err);
-      }
-    } else {
-      navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-      showToast("💌 Mood link copied! Share it anywhere 💫", moodInfo.color);
-    }
+  shareBtn.onclick = () => {
+    const text = `I'm feeling ${mood}! Listening to "${moodInfo.title}" on SoulSync 🎧`;
+    navigator.clipboard.writeText(text);
+    showToast("💌 Share text copied!", moodInfo.color);
   };
 }
 
-// 🌙 Dark mode toggle
+// 7. Event Listeners
+getSongBtn.addEventListener("click", () => {
+  const mood = moodSelect.value;
+  if (!mood) {
+    showToast("Please select a mood first!", "#ff6b6b");
+    return;
+  }
+  displayMood(mood);
+});
+
 toggleMode.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   toggleMode.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
 });
 
-// 🚀 Auto-load mood from URL
-const urlParams = new URLSearchParams(window.location.search);
-const moodFromUrl = urlParams.get("mood");
-if (moodFromUrl && moodData[moodFromUrl]) {
-  moodSelect.value = moodFromUrl;
-  displayMood(moodFromUrl);
-}
-
-// ✨ Toast Notification with color
-function showToast(message, color = "#444") {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.position = "fixed";
-  toast.style.bottom = "30px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-  toast.style.background = color;
-  toast.style.color = "#222";
-  toast.style.padding = "10px 20px";
-  toast.style.borderRadius = "25px";
-  toast.style.fontSize = "0.9rem";
-  toast.style.opacity = "0";
-  toast.style.transition = "opacity 0.4s ease, bottom 0.4s ease";
-  toast.style.zIndex = "9999";
-  toast.style.fontWeight = "500";
-  toast.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
-  toast.style.backdropFilter = "blur(8px)";
-
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = "1";
-    toast.style.bottom = "45px";
-  }, 50);
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.bottom = "25px";
-    setTimeout(() => toast.remove(), 400);
-  }, 2500);
-}
-
-
-/* 🎶 Mood-based autoplay setup */
-const moodAudio = document.getElementById("moodAudio");
-
-// Example mood triggers (replace or integrate with your actual buttons)
-const moods = {
-  happy: "songs/happy.mp3",
-  sad: "songs/sad.mp3",
-  romantic: "songs/romantic.mp3"
+// 8. Safety check to initialize only when library is ready
+window.onload = () => {
+  if (typeof faceapi !== 'undefined') {
+    loadAI();
+  } else {
+    setTimeout(loadAI, 1000);
+  }
 };
 
-// Example: user types mood name in chat
-function playMoodMusic(message) {
-  const lower = message.toLowerCase();
-  let moodFile = null;
-
-  if (lower.includes("happy")) moodFile = moods.happy;
-  else if (lower.includes("sad")) moodFile = moods.sad;
-  else if (lower.includes("romantic")) moodFile = moods.romantic;
-
-  if (moodFile) {
-    moodAudio.src = moodFile;
-    moodAudio.play().catch(err =>
-      console.log("Autoplay blocked until user interacts:", err)
-    );
-  }
+function showToast(message, color) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.cssText = `position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:${color}; padding:10px 20px; border-radius:20px; z-index:1000;`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
 }
-
-// Call after each user message
-function handleUserInput() {
-  const text = userInput.value.trim();
-  if (!text) return;
-  addMessage(text, "user");
-  userInput.value = "";
-  playMoodMusic(text); // 🎧 triggers music when mood detected
-  botReply();
-}
+const checkLibrary = setInterval(() => {
+    if (typeof faceapi !== 'undefined') {
+        console.log("Library loaded! Starting AI...");
+        loadAI();
+        clearInterval(checkLibrary);
+    } else {
+        console.log("Waiting for face-api library...");
+    }
+}, 500);

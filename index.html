@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SoulSync🎧"</title>
+  <title>SoulSync🎧</title>
   <link rel="stylesheet" href="style.css" />
-
-   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-14920914');
-</script>
+  <!-- AI Library loaded first -->
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  
+  <!-- 2. Your Logic (Loads second) -->
+  <script defer src="script.js"></script>
 
 </head>
 <body>
@@ -22,6 +19,12 @@
   </header>
 
   <main>
+    <!-- AI Webcam Section -->
+    <div class="ai-container" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
+      <video id="video" width="320" height="240" autoplay muted style="border-radius: 15px; border: 3px solid #0078ff;"></video>
+      <p id="ai-status" style="margin-top: 10px; font-weight: bold; color: #555;">Loading AI Models...</p>
+    </div>
+
     <section class="mood-section">
       <h2>How are you feeling today?</h2>
       <select id="moodSelect">
@@ -49,10 +52,7 @@
   <div id="emojiContainer"></div>
 
   <footer>
-    <p>© 2025 Ashu & Farhan | All Rights Reserved</p>
+    <p>© 2026 Farhan | Major Project</p>
   </footer>
-  <audio id="moodAudio" preload="auto"></audio>
-
-  <script src="script.js"></script>
 </body>
 </html>
