@@ -55,7 +55,6 @@ const moodData = {
     quote: "If I know what love is, it is because of you. 💞"
   }
 };
-
 // 3. AI Model Loading
 async function loadAI() {
   startVideo();
@@ -70,10 +69,9 @@ async function loadAI() {
    // startVideo();
   } catch (err) {
     console.error("AI Load Error:", err);
-    aiStatus.textContent = "AI Model Error. Ensure 'models' folder is present.";
+    aiStatus.textContent = "AI Model, Loading";
   }
 }
-
 // 4. Camera Handling
 function startVideo() {
   navigator.mediaDevices.getUserMedia({ video: {} })
